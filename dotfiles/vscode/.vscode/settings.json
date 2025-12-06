@@ -1,0 +1,6 @@
+{
+    "ansible.python.interpreterPath": "/z/venv/ansible/latest/bin/python3",
+    "ansible.ansible.path": "/z/venv/ansible/latest/bin/ansible",
+    "ansible.validation.lint.path": "/z/venv/ansible/latest/bin/ansible-lint"
+}
+

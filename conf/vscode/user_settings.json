@@ -1,0 +1,58 @@
+{
+    "editor.fontFamily": "SF Mono Medium, SF Mono, Menlo, monospace",
+    "editor.fontSize": 16,
+    "editor.fontWeight": "normal",
+    "editor.letterSpacing": -0.70,
+    "editor.fontLigatures": false,
+    "editor.minimap.enabled": false,
+    "editor.fontVariations": false,
+    "editor.lineHeight": 1.3,
+    "terminal.integrated.fontSize": 15,
+    "terminal.integrated.fontWeight": "normal",
+    "terminal.integrated.letterSpacing": -0.50,
+    "terminal.integrated.lineHeight": 1,
+    "redhat.telemetry.enabled": false,
+    "terminal.integrated.localEchoStyle": "dim",
+    "terminal.integrated.fontWeightBold": "bold",
+    "files.associations": {
+        "*.yml": "ansible",
+        "*.yaml": "ansible",
+        "*.j2": "jinja",
+        "*_html.j2": "html",
+        "inventory": "ini",
+        "hosts": "ini"
+    },
+    "ansible.executionEnvironment.volumeMounts": [],
+    "git.ignoreLegacyWarning": true,
+    "workbench.startupEditor": "none",
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+ 
+    "editor.cursorStyle": "block",
+    "editor.guides.bracketPairs": true,
+    "editor.cursorBlinking": "expand",
+    "editor.tokenColorCustomizations": {
+
+    },
+    "github.copilot.chat.agent.autoFix": false,
+    "github.copilot.chat.agent.runTasks": false,
+    "github.copilot.chat.codeGeneration.useInstructionFiles": false,
+    "git.enableSmartCommit": true,
+    "github.copilot.advanced": {
+
+    
+    },
+    "remote.SSH.defaultForwardedPorts": [
+
+    ],
+    "chat.agent.enabled": false,
+    "chat.commandCenter.enabled": false,
+    "telemetry.feedback.enabled": false,
+    "github.copilot.enable": {
+      "*": false
+    },
+    "ansible.lightspeed.enabled": false,
+    "ansible.lightspeed.suggestions.enabled": false,
+    "workbench.colorTheme": "GitHub Dark Default",
+    "workbench.secondarySideBar.defaultVisibility": "hidden"
+}
+

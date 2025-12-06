@@ -1,0 +1,67 @@
+default:
+  tags:
+    - gitlab-org
+
+stages:
+  - test
+
+editorconfig-checker:
+  stage: test
+  image: mstruebing/editorconfig-checker:v3.0.3
+  before_script:
+    - ec --help
+  script:
+    - ec -verbose
+  allow_failure: true
+
+yamllint:
+  stage: test
+  image: peterdavehello/yamllint:1.35.1
+  before_script:
+    - yamllint --help
+  script:
+    - yamllint -f parsable .
+  allow_failure: true
+
+ansible-lint-junit:
+  stage: test
+  image: pipelinecomponents/ansible-lint:0.72.0
+  artifacts:
+    when: always
+    reports:
+      junit: ansible-lint.xml
+  before_script:
+    - ansible-lint --version
+  script:
+    - ansible-lint -v --show-relpath -f pep8 --nocolor | ansible-lint-junit -o ansible-lint.xml
+  allow_failure: true
+
+ansible-lint-codeclimate:
+  stage: test
+  image: pipelinecomponents/ansible-lint:0.72.0
+  script: |
+    printf %s\\n "$-"
+    set +e
+    printf %s\\n "$-"
+    output=$(ansible-lint -f codeclimate)
+    exit_code=$?
+    echo "$output" | python -m json.tool | tee codeclimate-results.json
+    exit "$exit_code"
+  artifacts:
+    reports:
+      codequality:
+        - codeclimate-results.json
+    paths:
+      - codeclimate-results.json
+  allow_failure: true
+
+include:
+  - template: Jobs/SAST-IaC.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
+kics-iac-sast:
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: 4
+
+...
+

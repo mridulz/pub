@@ -1,0 +1,18 @@
+skip_list:
+  - name[missing]
+  - name[play]
+  - var-naming[no-role-prefix]
+  - var-naming[pattern]
+  - yaml[line-length]
+  - name[template]
+  - jinja[spacing]
+  - run-once[task]
+  - risky-shell-pipe
+  - no-changed-when
+  - package-latest
+  - ignore-errors
+  - key-order[task]
+  - command-instead-of-shell
+  - command-instead-of-module
+  - internal-error
+
