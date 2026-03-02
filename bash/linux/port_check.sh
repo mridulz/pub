@@ -1,7 +1,7 @@
 #!/bin/bash
 # ------------------------------------------------------------
 # Description:          Port Checks
-# Author:               zlabsroot
+# Author:               mridulz
 # Version:              2.0
 # Last Update:          2023-04-20
 # Comments:             Requires the nc/netcat command 
