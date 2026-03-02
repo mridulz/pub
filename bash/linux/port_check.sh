@@ -17,8 +17,7 @@ result_fw=25
 # ------------------------------------------------------------
 # FUNCTIONS
 # ------------------------------------------------------------
-line()
-{
+line() {
         cols=$(tput cols)
         char=${1--}
         len=${2-$cols}
@@ -26,18 +25,15 @@ line()
         printf "%-${len}s" "$1" | sed "s/ /${char}/g"; echo
 }
 
-dns_exists()
-{
+dns_exists() {
         nslookup $1 | grep -i "server can't find" > /dev/null 2>/dev/null && return 1 || return 0
 }
 
-is_ipaddress()
-{
+is_ipaddress() {
         echo $1 | grep -i '[a-z]' > /dev/null 2>&1 && return 1 || return 0
 }
 
-port_check_opt_1()
-{
+port_check_opt_1() {
         read -p "Enter Target Server (FQDN/IPADDR): " target
         read -p "Enter List of Ports (separated by space): " ports
 
@@ -65,8 +61,7 @@ port_check_opt_1()
         line "-" $total_fw 
 }
 
-port_check_opt_2()
-{
+port_check_opt_2() {
         read -p "Enter file containing list of Target Servers: " targets
         [ ! -f $targets ] && { echo "File doesn't exist"; exit 1; }
         read -p "Enter Port: " port
@@ -99,20 +94,17 @@ port_check_opt_2()
         line "-" $total_fw
 }
 
-connection_ok()
-{
+connection_ok() {
         nc -vz -w3 $1 $2 >/dev/null 2>&1 && return 0 || return 1
 }
 
-prechecks()
-{
+prechecks() {
         [ $(id -u) == 0 ] && { echo "Must not be run by root"; exit 1; }
 
         which nc > /dev/null 2>&1 || { echo "nc/netcat not found"; exit 1; }
 }
 
-main()
-{
+main() {
         echo
         echo "Choose an option..."
         echo "1) Check multiple ports on a single target"
