@@ -1,0 +1,50 @@
+export HISTTIMEFORMAT="[%Y.%m.%d %T] "
+export EDITOR='vim'
+export PATH=$PATH:$HOME/bin
+
+alias c='clear'
+alias ll='ls -lhrt'
+alias cp='cp -i'
+alias rm='rm -i'
+alias mv='mv -i'
+alias vi='vim'
+alias axel="axel -v -a -n20"
+alias rsync='rsync -hav --progress -I --size-only'
+alias connect='nc -vz -w3'
+alias lsblk='lsblk -d -o NAME,SIZE,MODEL'
+alias df='df -hTP -t ext4 -t xfs -t nfs -t nfs4 -t cifs'
+alias mkdir='mkdir -pv'
+alias d='docker'
+alias dc='docker compose'
+alias k='kubectl'
+alias kc='kubectl config'
+alias h='helm'
+alias tf='terraform'
+alias tfp='terraform plan'
+alias tfa='terraform apply'
+
+git_branch() {
+    local branch
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    [[ -n "$branch" && "$branch" != "HEAD" ]] && printf " git>%s " "$branch"
+}
+
+kc_current_context() {
+    local ctx
+    ctx=$(kubectl config current-context 2>/dev/null)
+    [[ -n "$ctx" ]] && printf " k8s:%s " "$ctx"
+}
+
+kc_get_contexts() {
+    kubectl config get-contexts
+}
+
+kc_use_context() {
+    [[ -z $1 ]] && read -p "Context? " new_context || new_context="$1"
+    kubectl config use-context $new_context
+}
+
+kc_unset_cur_context() {
+    kubectl config unset current-context
+}
+

@@ -1,0 +1,72 @@
+# -------------------------------------------
+# Font Settings
+# -------------------------------------------
+font-family = Liga SFMono Nerd Font
+font-size = 14
+font-style = medium
+adjust-cell-width = -1
+font-style-bold = false
+font-style-bold-italic = false
+font-synthetic-style = no-bold,no-bold-italic
+adjust-cell-height = 1
+#font-thicken = true
+#font-thicken-strength = 1
+font-feature = -calt
+font-feature = -liga
+font-feature = -dlig
+
+# -------------------------------------------
+# Theme
+# -------------------------------------------
+theme = ZLABS1
+#theme = ZLABS2
+
+# -------------------------------------------
+# Window Style
+# -------------------------------------------
+cursor-style = block
+macos-titlebar-style = native
+#macos-titlebar-style = tabs
+#macos-titlebar-style = transparent
+scrollback-limit = 10000
+window-colorspace = "display-p3"
+window-decoration = true
+window-padding-balance = true
+window-padding-x = 10
+window-padding-y = 10
+window-save-state = always
+
+# -------------------------------------------
+# Notifications
+# -------------------------------------------
+notify-on-command-finish = never
+bell-features = no-audio,no-attention,no-title
+
+# -------------------------------------------
+# Transparency and Blur
+# -------------------------------------------
+background-blur = 0
+background-opacity = 1
+cursor-style = block
+cursor-opacity = 0.7
+
+# -------------------------------------------
+# Others
+# -------------------------------------------
+copy-on-select = clipboard
+mouse-scroll-multiplier = 2
+scrollback-limit = 10000
+shell-integration = none
+selection-word-chars = " \t'\"│`|,;:()[]{}<>$@"
+#selection-word-chars = " \t'\"│`|:,()[]{}<>$"
+term = xterm-256color
+
+# -------------------------------------------
+# Keybindings
+# -------------------------------------------
+
+
+# -------------------------------------------
+# EOF
+# -------------------------------------------
+
