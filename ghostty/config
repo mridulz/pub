@@ -2,7 +2,7 @@
 # Font Settings
 # -------------------------------------------
 font-family = Liga SFMono Nerd Font
-font-size = 14
+font-size = 15.5
 font-style = medium
 adjust-cell-width = -1
 font-style-bold = false
@@ -18,8 +18,9 @@ font-feature = -dlig
 # -------------------------------------------
 # Theme
 # -------------------------------------------
-theme = ZLABS1
+#theme = ZLABS1
 #theme = ZLABS2
+theme = ZLABS3
 
 # -------------------------------------------
 # Window Style
