@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------
+# ~/.bashrc | macOS
+# ---------------------------------------------------------------
+
+# Machine Access Aliases
+
+# Environment
+export PATH=$PATH:$HOME/.local/bin:$HOME/bin:$HOME/bin/macos
+
+# Command Aliases
+alias c='clear'
+#alias ls='colorls'
+alias ll='ls -lhrt'
+alias vi='vim'
+alias rsync='rsync -havi --progress --delete -I --size-only --exclude .DS_Store --exclude .SynologyWorkingDirectory --exclude .localized --exclude .url'
+alias connect='nc -vz -w3'
+alias k='kubectl'
+alias kc='kubectl config'
+alias h='helm'
+
+# Functions
+ss_presets_list() {
+    ls -l ~/.config/starship/presets | awk '{print $NF}' | sed -e 1d -e 's/.toml//g'
+}
+
+ss_presets_set() {
+    [[ -z $1 ]] && read -p "Preset? " new_preset || new_preset="$1"
+    \cp ~/.config/starship/presets/${new_preset}.toml ~/.config/starship/starship.toml
+}
+
+kc_current_context() {
+    local ctx
+    ctx=$(kubectl config current-context 2>/dev/null)
+    [[ -n "$ctx" ]] && printf " k8s:%s " "$ctx"
+}
+
+kc_get_contexts() {
+    kubectl config get-contexts
+}
+
+kc_use_context() {
+    [[ -z $1 ]] && read -p "Context? " new_context || new_context="$1"
+    kubectl config use-context $new_context
+}
+
+kc_unset_cur_context() {
+    kubectl config unset current-context
+}
+
+# Starship
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+eval "$(starship init bash)"
+
+# Homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# EOF
+

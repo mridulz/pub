@@ -1,0 +1,12 @@
+{
+	"font_face": "SF Mono",
+	"font_size": 15,
+	"default_font_size": 12,
+	"color_scheme": "Packages/Catppuccin/Catppuccin Mocha.sublime-color-scheme",
+	"ignored_packages":
+	[
+		"Vintage",
+	],
+	"index_files": true,
+}
+

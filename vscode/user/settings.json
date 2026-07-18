@@ -1,0 +1,11 @@
+{
+    "ansible.python.interpreterPath": "/bin/python",
+    "ansible.ansible.path": "/z/venv/ansible/2.16.9/bin/ansible",
+    "ansible.validation.lint.path": "/z/venv/ansible/2.16.9/bin/ansible-lint",
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.pythonProjects": [],
+    "yaml.customTags": [
+        "!vault scalar"
+    ]
+}
+

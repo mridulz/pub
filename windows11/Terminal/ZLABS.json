@@ -1,0 +1,24 @@
+{
+    "background": "#0F0E1F",
+    "black": "#0F0E1F",
+    "blue": "#65B2FF",
+    "brightBlack": "#565575",
+    "brightBlue": "#91DDFF",
+    "brightCyan": "#AAFFE4",
+    "brightGreen": "#95FFA4",
+    "brightPurple": "#C991E1",
+    "brightRed": "#FF8080",
+    "brightWhite": "#CBE3E7",
+    "brightYellow": "#FFE9AA",
+    "cursorColor": "#FBFCFC",
+    "cyan": "#63F2F1",
+    "foreground": "#CBE1E7",
+    "green": "#62D196",
+    "name": "ZZZ",
+    "purple": "#906CFF",
+    "red": "#FF5458",
+    "selectionBackground": "#CBE1E7",
+    "white": "#A6B3CC",
+    "yellow": "#FFB378"
+}
+
