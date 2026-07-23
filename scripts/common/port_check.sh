@@ -1,139 +1,334 @@
-#!/bin/bash
-# ------------------------------------------------------------
-# Description:          Port Checks
-# Author:               Mridul Ranjan
-# Version:              2.0
-# Last Update:          2023-04-20
-# Comments:             Requires the nc/netcat command 
-# ------------------------------------------------------------
+#!/usr/bin/env bash
 
-# ------------------------------------------------------------
-# VARS 
-# ------------------------------------------------------------
-target_fw=25
-port_fw=6
-result_fw=25
+# ---------------------------------------------------------------------------
+# Description:      Interactive TCP port connectivity checker
+# Author:           Mridul Ranjan
+# Version:          4.0
+# Updated:          2026-07-23
+# Compatibility:    Linux and macOS (including macOS Bash 3.2)
+#
+# Requirements:
+#   - bash
+#   - nc (netcat)
+#
+# Target-file format for option 2:
+#   hostname_or_ip [fallback_ip]
+#
+# Examples:
+#   server1.example.com
+#   server2.example.com 192.0.2.20
+#   192.0.2.30
+#
+# Blank lines and lines beginning with # are ignored.
+# ---------------------------------------------------------------------------
 
-# ------------------------------------------------------------
-# FUNCTIONS
-# ------------------------------------------------------------
-function line()
-{
-        cols=$(tput cols)
-        char=${1--}
-        len=${2-$cols}
+TARGET_FW_DEFAULT=25
+PORT_FW=6
+RESULT_FW=25
+CONNECT_TIMEOUT=3
 
-        printf "%-${len}s" "$1" | sed "s/ /${char}/g"; echo
+line() {
+    local char="${1:--}"
+    local len="${2:-}"
+
+    if [[ -z "$len" ]]; then
+        if command -v tput >/dev/null 2>&1; then
+            len="$(tput cols 2>/dev/null || printf '80')"
+        else
+            len=80
+        fi
+    fi
+
+    printf '%*s\n' "$len" '' | tr ' ' "$char"
 }
 
-function dns_exists()
-{
-        nslookup $1 | grep -i "server can't find" > /dev/null 2>/dev/null && return 1 || return 0
+trim() {
+    local value="$1"
+
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+
+    printf '%s' "$value"
 }
 
-function is_ipaddress()
-{
-        echo $1 | grep -i '[a-z]' > /dev/null 2>&1 && return 1 || return 0
+is_ip_address() {
+    local target="$1"
+
+    # Accept IPv4 and IPv6 literals. Final validity is determined by nc.
+    case "$target" in
+        *:*) return 0 ;;
+        *[!0-9.]*|'') return 1 ;;
+        *) return 0 ;;
+    esac
 }
 
-function port_check_opt_1()
-{
-        read -p "Enter Target Server (FQDN/IPADDR): " target
-        read -p "Enter List of Ports (separated by space): " ports
+dns_exists() {
+    local target="$1"
 
-        target_len=$(echo $target | wc -c)
-        target_fw=$((target_len + 4))
-        total_fw=$((target_fw + port_fw + result_fw))
+    if is_ip_address "$target"; then
+        return 0
+    fi
 
-        echo
-        line "-" $total_fw
-        printf "%-${target_fw}s %-${port_fw}s %-${result_fw}s\n" "TARGET" "PORT" "RESULT" 
-        line "-" $total_fw 
-        for port in $ports
-        do
-                if is_ipaddress $target; then
-                        if connection_ok $target $port; then port_check="PASS"; else port_check="FAIL (CANNOT_CONNECT)"; fi
-                else
-                        if dns_exists $target; then
-                                if connection_ok $target $port; then port_check="PASS"; else port_check="FAIL (CANNOT_CONNECT)"; fi
-                        else
-                                port_check="FAIL (IPADDR_UNKNOWN)"
-                        fi
-                fi
-                printf "%-${target_fw}s %-${port_fw}s %-${result_fw}s\n" $target $port "$port_check"
-        done
-        line "-" $total_fw 
+    if command -v dscacheutil >/dev/null 2>&1; then
+        dscacheutil -q host -a name "$target" 2>/dev/null |
+            grep -Eq '^[[:space:]]*(ip_address|ipv6_address):'
+        return
+    fi
+
+    if command -v getent >/dev/null 2>&1; then
+        getent ahosts "$target" >/dev/null 2>&1
+        return
+    fi
+
+    if command -v host >/dev/null 2>&1; then
+        host "$target" >/dev/null 2>&1
+        return
+    fi
+
+    if command -v nslookup >/dev/null 2>&1; then
+        nslookup "$target" >/dev/null 2>&1
+        return
+    fi
+
+    # nc can still perform name resolution; do not reject the target merely
+    # because no standalone DNS utility is installed.
+    return 0
 }
 
-function port_check_opt_2()
-{
-        read -p "Enter file containing list of Target Servers: " targets
-        [ ! -f $targets ] && { echo "File doesn't exist"; exit 1; }
-        read -p "Enter Port: " port
+valid_port() {
+    local port="$1"
 
-        longest_line=$(wc -L $targets | awk '{print $1}')
-        target_fw=$((longest_line + 4))
-        total_fw=$((target_fw + port_fw + result_fw))
+    case "$port" in
+        ''|*[!0-9]*) return 1 ;;
+    esac
 
-        echo
-        line "-" $total_fw
-        printf "%-${target_fw}s %-${port_fw}s %-${result_fw}s\n" "TARGET" "PORT" "RESULT"
-        line "-" $total_fw
-        cat $targets | grep -v ^\# | sed '/^$/d' | while read target ipaddr 
-        do
-                if is_ipaddress $target; then
-                        if connection_ok $target $port; then port_check="PASS"; else port_check="FAIL (CANNOT_CONNECT)"; fi
-                else
-                        if dns_exists $target; then
-                                if connection_ok $target $port; then port_check="PASS"; else port_check="FAIL (CANNOT_CONNECT)"; fi
-                        else
-                                if [ ! -z $ipaddr ]; then
-                                        if connection_ok $ipaddr $port; then port_check="PASS"; else port_check="FAIL (CANNOT_CONNECT)"; fi
-                                else
-                                        port_check="FAIL (IPADDR_UNKNOWN)"
-                                fi
-                        fi
-                fi
-                printf "%-${target_fw}s %-${port_fw}s %-${result_fw}s\n" $target $port "$port_check"
-        done 
-        line "-" $total_fw
+    (( port >= 1 && port <= 65535 ))
 }
 
-function connection_ok()
-{
-        nc -vz -w3 $1 $2 >/dev/null 2>&1 && return 0 || return 1
+connection_ok() {
+    local target="$1"
+    local port="$2"
+
+    case "$(uname -s)" in
+        Darwin)
+            # macOS/BSD nc:
+            #   -G = TCP connection timeout
+            #   -w = network inactivity timeout
+            nc -z -G "$CONNECT_TIMEOUT" -w "$CONNECT_TIMEOUT" \
+                "$target" "$port" >/dev/null 2>&1
+            ;;
+        *)
+            # Linux/OpenBSD netcat and common Linux nc implementations.
+            nc -z -w "$CONNECT_TIMEOUT" \
+                "$target" "$port" >/dev/null 2>&1
+            ;;
+    esac
 }
 
-function prechecks()
-{
-        [ $(id -u) == 0 ] && { echo "Must not be run by root"; exit 1; }
+check_target() {
+    local target="$1"
+    local port="$2"
+    local fallback_ip="${3:-}"
 
-        which nc > /dev/null 2>&1 || { echo "nc/netcat not found"; exit 1; }
+    if ! valid_port "$port"; then
+        printf '%s' 'FAIL (INVALID_PORT)'
+        return
+    fi
+
+    if dns_exists "$target"; then
+        if connection_ok "$target" "$port"; then
+            printf '%s' 'PASS'
+        else
+            printf '%s' 'FAIL (CANNOT_CONNECT)'
+        fi
+        return
+    fi
+
+    if [[ -n "$fallback_ip" ]]; then
+        if connection_ok "$fallback_ip" "$port"; then
+            printf '%s' 'PASS'
+        else
+            printf '%s' 'FAIL (CANNOT_CONNECT)'
+        fi
+    else
+        printf '%s' 'FAIL (IPADDR_UNKNOWN)'
+    fi
 }
 
-function main()
-{
-        echo
-        echo "Choose an option..."
-        echo "1) Check multiple ports on a single target"
-        echo "2) Check a single port on multiple targets"
-        read -p "Enter choice: " CHOICE
-        echo
+longest_target_length() {
+    local targets_file="$1"
 
-        case $CHOICE in
-                1) port_check_opt_1 ;;
-                2) port_check_opt_2 ;;
-                *) echo "Invalid Choice"; exit 1;; 
-        esac
+    # Portable replacement for GNU "wc -L", which is unavailable on macOS.
+    awk '
+        {
+            sub(/\r$/, "")
+        }
+        /^[[:space:]]*#/ || /^[[:space:]]*$/ {
+            next
+        }
+        {
+            if (length($1) > max) {
+                max = length($1)
+            }
+        }
+        END {
+            print max + 0
+        }
+    ' "$targets_file"
 }
 
-# ------------------------------------------------------------
-# MAIN 
-# ------------------------------------------------------------
+port_check_opt_1() {
+    local target
+    local ports
+    local port
+    local port_check
+    local target_len
+    local target_fw
+    local total_fw
+
+    read -r -p 'Enter Target Server (FQDN/IPADDR): ' target
+    target="$(trim "$target")"
+
+    if [[ -z "$target" ]]; then
+        printf 'Target cannot be empty.\n' >&2
+        return 1
+    fi
+
+    read -r -p 'Enter List of Ports (separated by space): ' ports
+
+    if [[ -z "$(trim "$ports")" ]]; then
+        printf 'Port list cannot be empty.\n' >&2
+        return 1
+    fi
+
+    target_len=${#target}
+    target_fw=$((target_len + 4))
+
+    if (( target_fw < TARGET_FW_DEFAULT )); then
+        target_fw=$TARGET_FW_DEFAULT
+    fi
+
+    total_fw=$((target_fw + PORT_FW + RESULT_FW + 2))
+
+    printf '\n'
+    line '-' "$total_fw"
+    printf "%-${target_fw}s %-${PORT_FW}s %-${RESULT_FW}s\n" \
+        'TARGET' 'PORT' 'RESULT'
+    line '-' "$total_fw"
+
+    for port in $ports; do
+        port_check="$(check_target "$target" "$port")"
+        printf "%-${target_fw}s %-${PORT_FW}s %-${RESULT_FW}s\n" \
+            "$target" "$port" "$port_check"
+    done
+
+    line '-' "$total_fw"
+}
+
+port_check_opt_2() {
+    local targets
+    local port
+    local target
+    local ipaddr
+    local extra
+    local port_check
+    local longest_line
+    local target_fw
+    local total_fw
+    local line_content
+
+    read -r -p 'Enter file containing list of Target Servers: ' targets
+    targets="$(trim "$targets")"
+
+    if [[ ! -f "$targets" ]]; then
+        printf 'File does not exist: %s\n' "$targets" >&2
+        return 1
+    fi
+
+    read -r -p 'Enter Port: ' port
+    port="$(trim "$port")"
+
+    if ! valid_port "$port"; then
+        printf 'Invalid TCP port: %s\n' "$port" >&2
+        return 1
+    fi
+
+    longest_line="$(longest_target_length "$targets")"
+    target_fw=$((longest_line + 4))
+
+    if (( target_fw < TARGET_FW_DEFAULT )); then
+        target_fw=$TARGET_FW_DEFAULT
+    fi
+
+    total_fw=$((target_fw + PORT_FW + RESULT_FW + 2))
+
+    printf '\n'
+    line '-' "$total_fw"
+    printf "%-${target_fw}s %-${PORT_FW}s %-${RESULT_FW}s\n" \
+        'TARGET' 'PORT' 'RESULT'
+    line '-' "$total_fw"
+
+    while IFS= read -r line_content || [[ -n "$line_content" ]]; do
+        # Remove a Windows CR if the file uses CRLF line endings.
+        line_content="${line_content%$'\r'}"
+        line_content="$(trim "$line_content")"
+
+        [[ -z "$line_content" ]] && continue
+        [[ "$line_content" == \#* ]] && continue
+
+        target=''
+        ipaddr=''
+        extra=''
+
+        read -r target ipaddr extra <<< "$line_content"
+
+        if [[ -n "$extra" ]]; then
+            printf "%-${target_fw}s %-${PORT_FW}s %-${RESULT_FW}s\n" \
+                "$target" "$port" 'FAIL (INVALID_LINE)'
+            continue
+        fi
+
+        port_check="$(check_target "$target" "$port" "$ipaddr")"
+
+        printf "%-${target_fw}s %-${PORT_FW}s %-${RESULT_FW}s\n" \
+            "$target" "$port" "$port_check"
+    done < "$targets"
+
+    line '-' "$total_fw"
+}
+
+prechecks() {
+    if (( EUID == 0 )); then
+        printf 'Must not be run as root.\n' >&2
+        exit 1
+    fi
+
+    if ! command -v nc >/dev/null 2>&1; then
+        printf 'nc/netcat was not found in PATH.\n' >&2
+        exit 1
+    fi
+}
+
+main() {
+    local choice
+
+    printf '\n'
+    printf 'Choose an option...\n'
+    printf '1) Check multiple ports on a single target\n'
+    printf '2) Check a single port on multiple targets\n'
+    read -r -p 'Enter choice: ' choice
+    printf '\n'
+
+    case "$choice" in
+        1) port_check_opt_1 ;;
+        2) port_check_opt_2 ;;
+        *)
+            printf 'Invalid choice: %s\n' "$choice" >&2
+            exit 1
+            ;;
+    esac
+}
+
 prechecks
 main
-
-# ------------------------------------------------------------
-# EOF
-# ------------------------------------------------------------
 
