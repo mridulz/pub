@@ -1,0 +1,4 @@
+#!/bin/bash
+
+[ $(uname) != "Darwin" ] && { echo "Not a macOS"; exit 1; }
+pmset -g accps

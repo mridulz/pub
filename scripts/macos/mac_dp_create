@@ -1,0 +1,64 @@
+#!/bin/bash
+# --------------------------------------------------------------------------
+# Author:           MZ <mridulz@zlabs.dev>
+# Description:      DP Creator for Web Profiles
+# Last Update:      2026-06-20
+# --------------------------------------------------------------------------
+
+
+
+# --------------------------------------------------------------------------
+# VARIABLES
+# --------------------------------------------------------------------------
+FontName="Nunito-Regular.ttf"
+FontName="LigaSFMonoNerdFont-Regular.otf"
+
+Font="${HOME}/Library/Fonts/${FontName}"
+CanvasColorDefault="#18182f"
+FontColorDefault="white"
+FontSize="210"
+CanvasSize="512x512"
+CanvasOpts="xc:none"
+CircleOpts="256,256 256,40"
+GravityOpts="center"
+TextOffset="+0-5"
+OutputFile=$1
+
+
+
+# --------------------------------------------------------------------------
+# FUNCTIONS
+# --------------------------------------------------------------------------
+input() {
+    [[ -z "$1" ]] && read -p "Text? " Text || Text="$1"
+    [[ -z "$2" ]] && CanvasColor="$CanvasColorDefault" || CanvasColor="$2"
+    [[ -z "$3" ]] && FontColor="$FontColorDefault" || FontColor="$3"
+}
+
+pre_checks() {
+    which magick > /dev/null 2>&1 || { echo "magick not found"; exit 1; }
+
+    stat "$Font" > /dev/null 2>&1 || { echo "Font ($FontName) not found"; exit 1; }
+}
+
+dp_create() {
+    magick -size "${CanvasSize}" "${CanvasOpts}" \
+        -fill "${CanvasColor}" \
+        -draw "circle ${CircleOpts}" \
+        -fill "${FontColor}" \
+        -font "$Font" \
+        -gravity "${GravityOpts}" \
+        -pointsize "${FontSize}" \
+        -annotate "${TextOffset}" "${Text}" \
+        "${Text}.png"
+}
+
+
+
+# --------------------------------------------------------------------------
+# MAIN
+# --------------------------------------------------------------------------
+input $*
+pre_checks
+dp_create
+

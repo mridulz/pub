@@ -1,0 +1,9 @@
+#!/bin/bash
+# Only for Mac
+
+if [ $(uname) == "Darwin" ]; then
+	sudo killall -HUP mDNSResponder
+else
+	echo "Not a macOS"
+fi
+
