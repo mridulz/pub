@@ -1,0 +1,9 @@
+#!/bin/bash
+
+[ -z $1 ] && { echo "No input file provided"; exit 1; }
+
+while read fqdn
+do
+        fqdn_ip=$(nslookup $fqdn | grep Address: | grep -v \# | tail -1 | awk '{print $NF}')
+        echo "$fqdn $fqdn_ip"
+done < $1
