@@ -2,15 +2,15 @@
 # Font Settings
 # -------------------------------------------
 font-family = Liga SFMono Nerd Font
-font-size = 15.5
+font-size = 14.5
 font-style = medium
 adjust-cell-width = -1
 font-style-bold = false
 font-style-bold-italic = false
 font-synthetic-style = no-bold,no-bold-italic
-adjust-cell-height = 1
+adjust-cell-height = 2
 #font-thicken = true
-#font-thicken-strength = 1
+font-thicken-strength = 1
 font-feature = -calt
 font-feature = -liga
 font-feature = -dlig
@@ -18,9 +18,7 @@ font-feature = -dlig
 # -------------------------------------------
 # Theme
 # -------------------------------------------
-#theme = ZLABS1
-#theme = ZLABS2
-theme = ZLABS3
+theme = ZLABS
 
 # -------------------------------------------
 # Window Style
@@ -58,8 +56,7 @@ copy-on-select = clipboard
 mouse-scroll-multiplier = 2
 scrollback-limit = 10000
 shell-integration = none
-selection-word-chars = " \t'\"│`|,;:()[]{}<>$@"
-#selection-word-chars = " \t'\"│`|:,()[]{}<>$"
+selection-word-chars = " \t'\"│`|:;,()[]{}<>$"
 term = xterm-256color
 
 # -------------------------------------------
