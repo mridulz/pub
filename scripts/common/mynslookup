@@ -1,9 +1,21 @@
 #!/bin/bash
 
-[ -z $1 ] && { echo "No input file provided"; exit 1; }
+#!/bin/bash
 
-while read fqdn
+if [ -n "$1" ]; then
+    input="$1"
+
+    [ ! -f "$input" ] && { echo "Input file not found: $input"; exit 1; }
+else
+    [ -t 0 ] && { echo "No input file provided and nothing piped to stdin"; exit 1; }
+
+    input="/dev/stdin"
+fi
+
+while read -r fqdn
 do
-        fqdn_ip=$(nslookup $fqdn | grep Address: | grep -v \# | tail -1 | awk '{print $NF}')
-        echo "$fqdn $fqdn_ip"
-done < $1
+    fqdn_ip=$(nslookup "$fqdn" | grep Address: | grep -v \# | tail -1 | awk '{print $NF}')
+    echo "$fqdn $fqdn_ip"
+done < "$input"
+
+
