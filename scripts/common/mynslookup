@@ -1,16 +1,18 @@
 #!/bin/bash
 
-if [ -n "$1" ]; then
-    [ ! -f "$1" ] && { echo "Input file not found: $1"; exit 1; }
-    exec < "$1"
-elif [ -t 0 ]; then
-    echo "No input file provided or piped"
+if [[ -n "$1" ]]; then
+    input="$1"
+elif [[ ! -t 0 ]]; then
+    input="/dev/stdin"
+else
+    echo "No input file provided"
     exit 1
 fi
 
-while read -r fqdn
+while IFS= read -r fqdn
 do
     fqdn_ip=$(nslookup "$fqdn" | grep 'Address:' | grep -v '#' | tail -1 | awk '{print $NF}')
     echo "$fqdn $fqdn_ip"
-done
+done < "$input"
+
 
