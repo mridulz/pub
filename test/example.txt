@@ -1,0 +1,23 @@
+- name: Get user account information
+  ansible.builtin.getent:
+    database: passwd
+    key: "{{ username }}"
+
+- name: Get user password aging information
+  ansible.builtin.command:
+    cmd: "chage -l {{ username }}"
+  register: user_chage_before
+  changed_when: false
+
+- name: Display user information before change
+  ansible.builtin.debug:
+    msg: |
+      ============================================================
+      BEFORE CHANGE - {{ username }}
+      ============================================================
+      Login Shell : {{ ansible_facts.getent_passwd[username][5] }}
+
+      Password / Account Aging:
+      {{ user_chage_before.stdout }}
+      ============================================================
+
