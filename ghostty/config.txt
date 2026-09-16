@@ -1,9 +1,10 @@
 # -------------------------------------------
 # Font Settings
 # -------------------------------------------
-font-family = Liga SFMono Nerd Font
-font-size = 14.5
-font-style = medium
+#font-family = Liga SFMono Nerd Font
+font-family = Monaspace Neon
+font-size = 15.5
+font-style = regular
 adjust-cell-width = -1
 font-style-bold = false
 font-style-bold-italic = false
