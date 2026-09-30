@@ -1,0 +1,13 @@
+Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts' |
+    Select-Object -Property *Nordwand*
+
+Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts' |
+    Select-Object -Property *Nordwand*
+
+Get-ChildItem "$env:LOCALAPPDATA\Microsoft\Windows\Fonts" |
+    Where-Object Name -Like '*Nordwand*'
+
+Get-ChildItem 'C:\Windows\Fonts' |
+    Where-Object Name -Like '*Nordwand*'
+
+
