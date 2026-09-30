@@ -1,0 +1,36 @@
+# Z-chatGPT
+#
+# Deep graphite / subtle blue-green undertone
+# Crisp white foreground
+# Rich but controlled ANSI colors
+# Bright cyan cursor
+# Reverse-video selection
+
+palette = 0=#242a2c
+palette = 1=#f06a6a
+palette = 2=#67d391
+palette = 3=#e8bd68
+palette = 4=#62aef7
+palette = 5=#c08bea
+palette = 6=#63d4d0
+palette = 7=#d8dcdd
+
+palette = 8=#687377
+palette = 9=#ff7676
+palette = 10=#7de0a2
+palette = 11=#f3ca76
+palette = 12=#78bbff
+palette = 13=#cf9bf3
+palette = 14=#78e1dc
+palette = 15=#ffffff
+
+background = #13191b
+foreground = #f4f6f6
+
+cursor-color = #63d4d0
+cursor-text = #13191b
+
+# Reverse video
+selection-background = #f4f6f6
+selection-foreground = #13191b
+
